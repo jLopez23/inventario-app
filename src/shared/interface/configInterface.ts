@@ -5,6 +5,5 @@ export interface Config {
   };
   params: {
     email: string;
-    password: string;
   };
 }

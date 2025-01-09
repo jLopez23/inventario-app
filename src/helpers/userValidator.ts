@@ -8,12 +8,11 @@ const config = {
   },
 };
 
-export const validateUser = async (email: string, password: string) => {
+export const validateUser = async (email: string) => {
   const data = {
     ...config,
     params: {
       email: `eq.${email}`,
-      password: `eq.${password}`,
     },
   };
 

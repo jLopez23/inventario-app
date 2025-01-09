@@ -18,6 +18,8 @@ import {Navigation} from '../../interfaces/navigationsInterface';
 import {setAuthUser} from '../../../redux/slices/authUserSlice';
 import {passwordValidator} from '../../../helpers/passwordValidator';
 import {validateUser} from '../../../helpers/userValidator';
+import { comparePasswords } from '../../../helpers/encryptPassword';
+import { ENCRYP_KEY } from '../../../constants/app';
 
 export const LoginScreen = ({navigation}: Navigation) => {
   const dispatch = useDispatch();
@@ -25,7 +27,6 @@ export const LoginScreen = ({navigation}: Navigation) => {
   const [passwordUser, setPassword] = useState({value: '', error: ''});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
   const onLoginPressed = async () => {
     const email = emailUser.value;
     const password = passwordUser.value;
@@ -41,9 +42,16 @@ export const LoginScreen = ({navigation}: Navigation) => {
 
     setError('');
     setLoading(true);
-    const user = await validateUser(email, password);
+    const user = await validateUser(email);
     if (typeof user === 'string') {
       setError(user);
+      setLoading(false);
+      return;
+    }
+    const matchingPasswords = await comparePasswords(password, user.password, ENCRYP_KEY);
+
+    if (typeof matchingPasswords === 'string') {
+      setError(matchingPasswords);
       setLoading(false);
       return;
     }
@@ -52,8 +60,8 @@ export const LoginScreen = ({navigation}: Navigation) => {
       setAuthUser({
         id: user.id,
         name: user.name,
-        email: email,
-        password: password,
+        email: user.email,
+        password: user.password,
       }),
     );
     setLoading(false);

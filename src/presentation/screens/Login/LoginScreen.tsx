@@ -1,34 +1,63 @@
 import React, {useState} from 'react';
-import {TouchableOpacity, StyleSheet, View} from 'react-native';
 import {Text} from 'react-native-paper';
-import Background from '../../components/shared/Background';
+import {theme} from '../../theme/theme';
 import Logo from '../../components/shared/Logo';
 import Header from '../../components/shared/Header';
 import Button from '../../components/shared/Button';
+import {useDispatch} from 'react-redux';
 import TextInput from '../../components/shared/TextInput';
-import {theme} from '../../theme/theme';
+import Background from '../../components/shared/Background';
 import {emailValidator} from '../../../helpers/emailValidator';
+import {
+  TouchableOpacity,
+  StyleSheet,
+  View,
+  ActivityIndicator,
+} from 'react-native';
+import {Navigation} from '../../interfaces/navigationsInterface';
+import {setAuthUser} from '../../../redux/slices/authUserSlice';
 import {passwordValidator} from '../../../helpers/passwordValidator';
-import { Navigation } from '../../interfaces/navigationsInterface';
-
-
+import {validateUser} from '../../../helpers/userValidator';
 
 export const LoginScreen = ({navigation}: Navigation) => {
-  const [email, setEmail] = useState({value: '', error: ''});
-  const [password, setPassword] = useState({value: '', error: ''});
+  const dispatch = useDispatch();
+  const [emailUser, setEmail] = useState({value: '', error: ''});
+  const [passwordUser, setPassword] = useState({value: '', error: ''});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const onLoginPressed = () => {
-    const emailError = emailValidator(email.value);
-    const passwordError = passwordValidator(password.value);
+  const onLoginPressed = async () => {
+    const email = emailUser.value;
+    const password = passwordUser.value;
+
+    const emailError = emailValidator(email);
+    const passwordError = passwordValidator(passwordUser.value);
     if (emailError || passwordError) {
-      setEmail({...email, error: emailError});
-      setPassword({...password, error: passwordError});
+      setEmail({...emailUser, error: emailError});
+      setPassword({...passwordUser, error: passwordError});
+      setLoading(false);
       return;
     }
-    navigation.reset({
-      index: 0,
-      routes: [{name: 'Dashboard'}],
-    });
+
+    setError('');
+    setLoading(true);
+    const user = await validateUser(email, password);
+    if (typeof user === 'string') {
+      setError(user);
+      setLoading(false);
+      return;
+    }
+
+    dispatch(
+      setAuthUser({
+        id: user.id,
+        name: user.name,
+        email: email,
+        password: password,
+      }),
+    );
+    setLoading(false);
+    navigation.navigate('Home');
   };
 
   return (
@@ -38,10 +67,10 @@ export const LoginScreen = ({navigation}: Navigation) => {
       <TextInput
         label="Correo"
         returnKeyType="next"
-        value={email.value}
+        value={emailUser.value}
         onChangeText={text => setEmail({value: text, error: ''})}
-        error={!!email.error}
-        errorText={email.error}
+        error={!!emailUser.error}
+        errorText={emailUser.error}
         autoCapitalize="none"
         autoCompleteType="email"
         textContentType="emailAddress"
@@ -51,13 +80,19 @@ export const LoginScreen = ({navigation}: Navigation) => {
       <TextInput
         label="Contraseña"
         returnKeyType="done"
-        value={password.value}
+        value={passwordUser.value}
         onChangeText={text => setPassword({value: text, error: ''})}
-        error={!!password.error}
-        errorText={password.error}
+        error={!!passwordUser.error}
+        errorText={passwordUser.error}
         secureTextEntry
         description=""
       />
+      <View style={styles.row}>
+        <Text>
+          {loading && <ActivityIndicator size="large" color="#0000ff" />}{' '}
+        </Text>
+        <Text>{error && <Text style={{color: 'red'}}>{error}</Text>} </Text>
+      </View>
       <Button mode="contained" onPress={onLoginPressed}>
         Login
       </Button>

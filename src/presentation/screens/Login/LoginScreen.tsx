@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
 import {Text} from 'react-native-paper';
+import {useDispatch} from 'react-redux';
 import {theme} from '../../theme/theme';
 import Logo from '../../components/shared/Logo';
 import Header from '../../components/shared/Header';
 import Button from '../../components/shared/Button';
-import {useDispatch} from 'react-redux';
+import {userLogin} from '../../../helpers/userLogin';
 import TextInput from '../../components/shared/TextInput';
 import Background from '../../components/shared/Background';
 import {emailValidator} from '../../../helpers/emailValidator';
@@ -14,12 +15,10 @@ import {
   View,
   ActivityIndicator,
 } from 'react-native';
-import {Navigation} from '../../interfaces/navigationsInterface';
 import {setAuthUser} from '../../../redux/slices/authUserSlice';
-import {passwordValidator} from '../../../helpers/passwordValidator';
-import {validateUser} from '../../../helpers/userValidator';
+import {Navigation} from '../../interfaces/navigationsInterface';
 import { comparePasswords } from '../../../helpers/encryptPassword';
-import { ENCRYP_KEY } from '../../../constants/app';
+import {passwordValidator} from '../../../helpers/passwordValidator';
 
 export const LoginScreen = ({navigation}: Navigation) => {
   const dispatch = useDispatch();
@@ -27,6 +26,7 @@ export const LoginScreen = ({navigation}: Navigation) => {
   const [passwordUser, setPassword] = useState({value: '', error: ''});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
   const onLoginPressed = async () => {
     const email = emailUser.value;
     const password = passwordUser.value;
@@ -42,13 +42,13 @@ export const LoginScreen = ({navigation}: Navigation) => {
 
     setError('');
     setLoading(true);
-    const user = await validateUser(email);
+    const user = await userLogin(email);
     if (typeof user === 'string') {
       setError(user);
       setLoading(false);
       return;
     }
-    const matchingPasswords = await comparePasswords(password, user.password, ENCRYP_KEY);
+    const matchingPasswords = await comparePasswords(password, user.password);
 
     if (typeof matchingPasswords === 'string') {
       setError(matchingPasswords);

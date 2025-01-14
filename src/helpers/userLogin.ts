@@ -1,4 +1,4 @@
-import {httpAxios} from '../shared/axios';
+import {httpAxiosGetUser} from '../shared/axios';
 import {SUPABASE} from '../constants/app';
 
 const config = {
@@ -8,7 +8,7 @@ const config = {
   },
 };
 
-export const validateUser = async (email: string) => {
+export const userLogin = async (email: string) => {
   const data = {
     ...config,
     params: {
@@ -16,7 +16,7 @@ export const validateUser = async (email: string) => {
     },
   };
 
-  const response = await httpAxios(SUPABASE.URL, data);
+  const response = await httpAxiosGetUser(SUPABASE.URL, data);
 
   return response === 'Error al generar la petición'
     ? response

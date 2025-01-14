@@ -3,7 +3,12 @@ export interface Config {
     apikey: string;
     Authorization: string;
   };
-  params: {
+  params?: {
     email: string;
   };
+}
+export interface CreateUser {
+  name: string;
+  email: string;
+  password: string;
 }

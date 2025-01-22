@@ -105,7 +105,7 @@ export const LoginScreen = ({navigation}: Navigation) => {
         Login
       </Button>
       <View style={styles.row}>
-        <Text>¿No tiene cuenta? </Text>
+        <Text>¿No tienes cuenta? </Text>
         <TouchableOpacity onPress={() => navigation.navigate('Register')}>
           <Text style={styles.link}>Regístrate</Text>
         </TouchableOpacity>

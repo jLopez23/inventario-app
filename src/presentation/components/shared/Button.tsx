@@ -3,7 +3,13 @@ import {StyleSheet} from 'react-native';
 import {Button as PaperButton} from 'react-native-paper';
 import {theme} from '../../theme/theme';
 
-const Button = ({mode, style, ...props}) => {
+interface ButtonProps {
+  mode: 'text' | 'outlined' | 'contained';
+  style?: object;
+  [key: string]: any;
+}
+
+const Button: React.FC<ButtonProps> = ({mode, style, ...props}) => {
   return (
     <PaperButton
       style={[

@@ -1,3 +1,4 @@
+import {StyleSheet} from 'react-native';
 import {DefaultTheme} from 'react-native-paper';
 
 export const theme = {
@@ -10,3 +11,14 @@ export const theme = {
     error: '#f13a59',
   },
 };
+
+export const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    marginTop: 4,
+  },
+  link: {
+    fontWeight: 'bold',
+    color: theme.colors.primary,
+  },
+});

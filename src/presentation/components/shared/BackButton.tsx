@@ -2,7 +2,11 @@ import React from 'react';
 import {TouchableOpacity, Image, StyleSheet} from 'react-native';
 import {getStatusBarHeight} from 'react-native-status-bar-height';
 
-const BackButton = ({goBack}) => {
+interface BackButtonProps {
+  goBack: () => void;
+}
+
+const BackButton: React.FC<BackButtonProps> = ({goBack}) => {
   return (
     <TouchableOpacity onPress={goBack} style={styles.container}>
       <Image

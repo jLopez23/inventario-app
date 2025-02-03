@@ -3,7 +3,13 @@ import {View, StyleSheet, Text} from 'react-native';
 import {TextInput as Input} from 'react-native-paper';
 import {theme} from '../../theme/theme';
 
-const TextInput = ({errorText, description, ...props}) => {
+interface TextInputProps {
+  errorText?: string;
+  description?: string;
+  [key: string]: any;
+}
+
+const TextInput: React.FC<TextInputProps> = ({errorText, description, ...props}) => {
   return (
     <View style={styles.container}>
       <Input

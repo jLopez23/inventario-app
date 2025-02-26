@@ -43,5 +43,17 @@ export const useAuth = () => {
     }
   };
 
-  return {loading, error, login};
+  const logout = () => {
+    dispatch(
+      setAuthUser({
+        id: 0,
+        name: '',
+        email: '',
+        password: '',
+      }),
+    );
+    return true;
+  };
+
+  return {loading, error, login, logout};
 };

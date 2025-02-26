@@ -8,12 +8,15 @@ import Background from '../../components/shared/Background';
 import BackButton from '../../components/shared/BackButton';
 import {LoginLink} from '../../components/shared/LoginLink';
 import {setAuthUser} from '../../../redux/slices/authUserSlice';
-import {Navigation} from '../../interfaces/navigationsInterface';
 import {RegisterForm} from '../../components/shared/RegisterForm';
 import {LoadingError} from '../../components/shared/LoadingError';
 import {AuthService} from '../../../infrastructure/services/authService';
+import {StackScreenProps} from '@react-navigation/stack';
+import {RootStackParams} from '../../routes/StackNavigator';
 
-export const RegisterScreen = ({navigation}: Navigation) => {
+interface Props extends StackScreenProps<RootStackParams, 'RegisterScreen'> {}
+
+export const RegisterScreen = ({navigation}: Props) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -46,7 +49,7 @@ export const RegisterScreen = ({navigation}: Navigation) => {
       }
 
       dispatch(setAuthUser(result));
-      navigation.navigate('Home');
+      navigation.navigate('HomeScreen');
     } catch (err) {
       setError((err as Error).message);
     } finally {

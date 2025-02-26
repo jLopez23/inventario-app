@@ -2,12 +2,17 @@ import {TouchableOpacity} from 'react-native';
 import {Text} from 'react-native-paper';
 import {styles} from '../../theme/theme';
 import {View} from 'react-native';
-import {Navigation} from '../../interfaces/navigationsInterface';
+import {NavigationProp} from '@react-navigation/native';
+import {RootStackParams} from '../../routes/StackNavigator';
 
-export const RegisterLink = ({navigation}: Navigation) => (
+interface Props {
+  navigation: NavigationProp<RootStackParams>;
+}
+
+export const RegisterLink = ({navigation}: Props) => (
   <View style={styles.row}>
     <Text>¿No tienes cuenta? </Text>
-    <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+    <TouchableOpacity onPress={() => navigation.navigate('RegisterScreen')}>
       <Text style={styles.link}>Regístrate</Text>
     </TouchableOpacity>
   </View>

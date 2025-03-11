@@ -10,7 +10,6 @@ export const getProductsByPage = async (page: number, limit: number = 20) => {
       `/products?offset=${page * 10}&limit=${limit}`,
     );
     const products = data.map(ProductMapper.tesloProductToEntity);
-    console.log('aqui estoy mostrando products', products[0]);
     return products;
   } catch (error) {
     console.log(error);

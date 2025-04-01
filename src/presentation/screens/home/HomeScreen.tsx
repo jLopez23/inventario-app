@@ -9,11 +9,12 @@ import {FullScreenLoader} from '../../../presentation/components/ui/FullScreenLo
 import {ProductList} from '../../../presentation/components/products/ProductList';
 import {getProductsByPage} from '../../../actions/products/get-products-by-page';
 import {useInfiniteQuery} from '@tanstack/react-query';
+import {Button, Icon} from '@ui-kitten/components';
 
 interface Props extends StackScreenProps<RootStackParams, 'HomeScreen'> {}
 
 export const HomeScreen = ({navigation}: Props) => {
-  const {name} = useSelector(({authUser}: RootState) => authUser);
+  const {user} = useSelector(({authUser}: RootState) => authUser);
   const {logout} = useAuth();
 
   const {isLoading, data, fetchNextPage} = useInfiniteQuery({
@@ -27,7 +28,10 @@ export const HomeScreen = ({navigation}: Props) => {
   });
 
   return (
-    <MainLayout title="Inventario App" subTitle={`Hola ${name}`}>
+    <MainLayout title="Inventario App" subTitle={`Hola ${user?.fullName}`}>
+      <Button accessoryLeft={<Icon name="log-out-outline" />} onPress={logout}>
+        Logout
+      </Button>
       {isLoading ? (
         <FullScreenLoader />
       ) : (

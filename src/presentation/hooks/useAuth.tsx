@@ -1,9 +1,9 @@
 import {useState} from 'react';
 import {useDispatch} from 'react-redux';
-import {userLogin} from '../../helpers/userLogin';
-import {comparePasswords} from '../../helpers/encryptPassword';
 import {setAuthUser} from '../../redux/slices/authUserSlice';
 import {ILoginForm} from '../interfaces/app';
+import {authCheckStatus, authLogin} from '../../actions/auth/auth';
+import {StorageAdapter} from '../../config/adapters/storage-adapter';
 
 export const useAuth = () => {
   const dispatch = useDispatch();
@@ -15,25 +15,27 @@ export const useAuth = () => {
     setLoading(true);
 
     try {
-      const user = await userLogin(email);
-      if (typeof user === 'string') {
-        throw new Error(user);
+      const resp = await authLogin(email, password);
+      if (!resp) {
+        dispatch(
+          setAuthUser({
+            status: 'unauthenticated',
+            token: undefined,
+            user: undefined,
+          }),
+        );
+        throw new Error('Usuario o contraseña incorrectos');
       }
 
-      const matchingPasswords = await comparePasswords(password, user.password);
-      if (typeof matchingPasswords === 'string') {
-        throw new Error(matchingPasswords);
-      }
+      await StorageAdapter.setItem('token', resp.token);
 
       dispatch(
         setAuthUser({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          password: user.password,
+          status: 'authenticated',
+          token: resp.token,
+          user: resp.user,
         }),
       );
-
       return true;
     } catch (err) {
       setError((err as Error).message);
@@ -43,17 +45,39 @@ export const useAuth = () => {
     }
   };
 
-  const logout = () => {
+  const checkStatus = async () => {
+    const resp = await authCheckStatus();
+    if (!resp) {
+      dispatch(
+        setAuthUser({
+          status: 'unauthenticated',
+          token: undefined,
+          user: undefined,
+        }),
+      );
+      return;
+    }
+    await StorageAdapter.setItem('token', resp.token);
     dispatch(
       setAuthUser({
-        id: 0,
-        name: '',
-        email: '',
-        password: '',
+        status: 'authenticated',
+        token: resp.token,
+        user: resp.user,
+      }),
+    );
+  };
+
+  const logout = async () => {
+    await StorageAdapter.removeItem('token');
+    dispatch(
+      setAuthUser({
+        status: 'unauthenticated',
+        token: undefined,
+        user: undefined,
       }),
     );
     return true;
   };
 
-  return {loading, error, login, logout};
+  return {loading, error, login, checkStatus, logout};
 };

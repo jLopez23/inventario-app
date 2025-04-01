@@ -1,6 +1,7 @@
+import { User } from 'src/domain/entities/user';
+import { AuthStatus } from '../../infrastructure/interfaces/auth.status';
 export interface AuthUserState {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
+  status?: AuthStatus;
+  token?: string;
+  user?: User;
 }

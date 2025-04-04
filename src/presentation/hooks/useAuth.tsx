@@ -1,8 +1,12 @@
 import {useState} from 'react';
 import {useDispatch} from 'react-redux';
 import {setAuthUser} from '../../redux/slices/authUserSlice';
-import {ILoginForm} from '../interfaces/app';
-import {authCheckStatus, authLogin} from '../../actions/auth/auth';
+import {ILoginForm, IRegisterForm} from '../interfaces/app';
+import {
+  authCheckStatus,
+  authLogin,
+  authRegister,
+} from '../../actions/auth/auth';
 import {StorageAdapter} from '../../config/adapters/storage-adapter';
 
 export const useAuth = () => {
@@ -79,5 +83,41 @@ export const useAuth = () => {
     return true;
   };
 
-  return {loading, error, login, checkStatus, logout};
+  const register = async ({email, password, name}: IRegisterForm) => {
+    setError('');
+    setLoading(true);
+
+    try {
+      const resp = await authRegister(email, password, name);
+      console.log({resp});
+      if (!resp) {
+        dispatch(
+          setAuthUser({
+            status: 'unauthenticated',
+            token: undefined,
+            user: undefined,
+          }),
+        );
+        throw new Error('Error al intentar crear el nuevo usuario');
+      }
+
+      await StorageAdapter.setItem('token', resp.token);
+
+      dispatch(
+        setAuthUser({
+          status: 'authenticated',
+          token: resp.token,
+          user: resp.user,
+        }),
+      );
+      return true;
+    } catch (err) {
+      setError(err as string);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {loading, error, login, checkStatus, logout, register};
 };

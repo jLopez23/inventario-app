@@ -54,7 +54,7 @@ export const LoginScreen = ({navigation}: Props) => {
         description=""
       />
       <LoadingError loading={loading} error={error} />
-      <Button mode="contained"  onPress={handleLogin} disabled={loading} style={{}}>
+      <Button mode="contained" onPress={handleLogin} disabled={loading} style={{}}>
         Login
       </Button>
       <RegisterLink navigation={navigation} />

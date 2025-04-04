@@ -26,7 +26,7 @@ const updateProduct = async (product: Partial<Product>) => {
     return data;
   } catch (error) {
     if (isAxiosError(error)) {
-      console.log('Error Axios:', error.response?.config);
+      console.log('Error Axios:', JSON.stringify(error));
     }
     throw new Error('Error updating product');
   }

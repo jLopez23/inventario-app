@@ -32,7 +32,6 @@ export const authLogin = async (email: string, password: string) => {
 };
 
 export const authCheckStatus = async () => {
-
   try {
     const {data} = await tesloApi.get<AuthResponse>('/auth/check-status');
     return returnUserToken(data);
@@ -40,4 +39,23 @@ export const authCheckStatus = async () => {
     console.log(JSON.stringify(error));
     return null;
   }
-}
+};
+
+export const authRegister = async (
+  email: string,
+  password: string,
+  fullName: string,
+) => {
+  try {
+    console.log('Registering user...', {email, password, fullName});
+    const {data} = await tesloApi.post<AuthResponse>('/auth/register', {
+      email,
+      password,
+      fullName,
+    });
+    return returnUserToken(data);
+  } catch (error) {
+    console.log('Error authRegister: ', JSON.stringify(error));
+    return null;
+  }
+};

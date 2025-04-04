@@ -1,5 +1,4 @@
-import React, {useState} from 'react';
-import {useDispatch} from 'react-redux';
+import React from 'react';
 import Logo from '../../components/shared/Logo';
 import Header from '../../components/shared/Header';
 import Button from '../../components/shared/Button';
@@ -7,19 +6,15 @@ import {useRegisterForm} from '../../hooks/useRegisterForm';
 import Background from '../../components/shared/Background';
 import BackButton from '../../components/shared/BackButton';
 import {LoginLink} from '../../components/shared/LoginLink';
-import {setAuthUser} from '../../../redux/slices/authUserSlice';
 import {RegisterForm} from '../../components/shared/RegisterForm';
 import {LoadingError} from '../../components/shared/LoadingError';
-import {AuthService} from '../../../infrastructure/services/authService';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RootStackParams} from '../../routes/StackNavigator';
+import {useAuth} from '../../hooks/useAuth';
 
 interface Props extends StackScreenProps<RootStackParams, 'RegisterScreen'> {}
 
 export const RegisterScreen = ({navigation}: Props) => {
-  const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const {
     nameUser,
     emailUser,
@@ -29,32 +24,15 @@ export const RegisterScreen = ({navigation}: Props) => {
     setPassword,
     validateForm,
   } = useRegisterForm();
+  const {loading, error, register} = useAuth();
 
   const handleRegister = async () => {
     if (!validateForm()) return;
-
-    setError('');
-    setLoading(true);
-
-    try {
-      const result = await AuthService.register({
-        name: nameUser.value,
-        email: emailUser.value,
-        password: passwordUser.value,
-      });
-
-      if (typeof result === 'string') {
-        setError(result);
-        return;
-      }
-
-      dispatch(setAuthUser(result));
-      navigation.navigate('HomeScreen');
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
+    await register({
+      name: nameUser.value,
+      email: emailUser.value,
+      password: passwordUser.value,
+    });
   };
 
   return (

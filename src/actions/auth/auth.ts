@@ -26,7 +26,7 @@ export const authLogin = async (email: string, password: string) => {
     });
     return returnUserToken(data);
   } catch (error) {
-    console.log(error);
+    console.log(`Error authLogin: ${JSON.stringify(error)}`);
     return null;
   }
 };
@@ -36,7 +36,7 @@ export const authCheckStatus = async () => {
     const {data} = await tesloApi.get<AuthResponse>('/auth/check-status');
     return returnUserToken(data);
   } catch (error) {
-    console.log(JSON.stringify(error));
+    console.log(`Error authCheckStatus: ${JSON.stringify(error)}`);
     return null;
   }
 };
@@ -55,7 +55,7 @@ export const authRegister = async (
     });
     return returnUserToken(data);
   } catch (error) {
-    console.log('Error authRegister: ', JSON.stringify(error));
+    console.log(`Error authRegister: ${JSON.stringify(error)}`);
     return null;
   }
 };

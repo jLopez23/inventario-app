@@ -89,7 +89,6 @@ export const useAuth = () => {
 
     try {
       const resp = await authRegister(email, password, name);
-      console.log({resp});
       if (!resp) {
         dispatch(
           setAuthUser({

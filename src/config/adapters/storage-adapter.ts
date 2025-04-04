@@ -22,7 +22,7 @@ export class StorageAdapter {
     try {
       await AsyncStorage.removeItem(key);
     } catch (error) {
-      console.log(JSON.stringify(error));
+      console.log(`Error removeItem: ${JSON.stringify(error)}`);
       throw new Error(`Error removing item from storage: ${key}`);
     }
   }

@@ -8,18 +8,17 @@ import {
 } from '@ui-kitten/components';
 import {MainLayout} from '../../layouts/MainLayout';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {getProductById} from '../../../actions/products/get-product-by-id';
+import {getProductById, updateCreateProduct} from '../../../actions/products';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RootStackParams} from '../../routes/StackNavigator';
-import {FlatList, ScrollView} from 'react-native-gesture-handler';
-import {FadeInImage} from '../../components/ui/FadeInImage';
-import {Size, Gender, Product} from '../../../domain/entities/product';
+import {ScrollView} from 'react-native-gesture-handler';
+import {Product} from '../../../domain/entities/product';
 import {MyIcon} from '../../components/ui/MyIcon';
 import {Formik} from 'formik';
-import {updateCreateProduct} from '../../../actions/products/update-create-product';
+import {useAuth} from '../../hooks/useAuth';
+import {ProductImages} from '../../components/products/ProductImages';
+import {sizes, genders} from '../../../config/constants/constants';
 
-const sizes: Size[] = [Size.Xs, Size.S, Size.M, Size.L, Size.XL, Size.Xxl];
-const genders: Gender[] = [Gender.Kid, Gender.Men, Gender.Women, Gender.Unisex];
 interface Props extends StackScreenProps<RootStackParams, 'ProductScreen'> {
   productId: string;
 }
@@ -28,6 +27,7 @@ export const ProductScreen = ({route}: Props) => {
   const productIdRef = useRef(route.params.productId);
   const theme = useTheme();
   const queryClient = useQueryClient();
+  const {logout} = useAuth();
 
   const {data: product} = useQuery({
     queryKey: ['product', productIdRef.current],
@@ -52,21 +52,19 @@ export const ProductScreen = ({route}: Props) => {
   return (
     <Formik initialValues={product} onSubmit={mutation.mutate}>
       {({handleChange, handleSubmit, values, errors, setFieldValue}) => (
-        <MainLayout title={values.title} subTitle={`Precio: ${values.price}`}>
+        <MainLayout
+          title={values.title}
+          subTitle={`Precio: ${values.price}`}
+          rightAction={logout}
+          rightActionIcon="log-out-outline">
           <ScrollView style={{flex: 1}}>
-            <Layout>
-              <FlatList
-                data={values.images}
-                keyExtractor={item => item}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                renderItem={({item}) => (
-                  <FadeInImage
-                    uri={item}
-                    style={{width: 300, height: 300, marginHorizontal: 7}}
-                  />
-                )}
-              />
+            <Layout
+              style={{
+                marginVertical: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <ProductImages images={values.images} />
             </Layout>
 
             <Layout style={{marginHorizontal: 10}}>

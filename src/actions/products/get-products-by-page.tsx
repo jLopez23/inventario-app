@@ -15,7 +15,7 @@ export const getProductsByPage = async (
     const products = data.map(ProductMapper.tesloProductToEntity);
     return products;
   } catch (error) {
-    console.log(error);
+    console.log(`Error getProductsByPage: ${JSON.stringify(error)}`);
     throw new Error('Error fetching products');
   }
 };

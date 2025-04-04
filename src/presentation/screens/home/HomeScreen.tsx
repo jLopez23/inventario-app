@@ -9,7 +9,7 @@ import {FullScreenLoader} from '../../../presentation/components/ui/FullScreenLo
 import {ProductList} from '../../../presentation/components/products/ProductList';
 import {getProductsByPage} from '../../../actions/products/get-products-by-page';
 import {useInfiniteQuery} from '@tanstack/react-query';
-import {Button, Icon} from '@ui-kitten/components';
+import {FAB} from '../../../presentation/components/ui/FAB';
 
 interface Props extends StackScreenProps<RootStackParams, 'HomeScreen'> {}
 
@@ -28,25 +28,30 @@ export const HomeScreen = ({navigation}: Props) => {
   });
 
   return (
-    <MainLayout title="Inventario App" subTitle={`Hola ${user?.fullName}`}>
-      <Button accessoryLeft={<Icon name="log-out-outline" />} onPress={logout}>
-        Logout
-      </Button>
-      {isLoading ? (
-        <FullScreenLoader />
-      ) : (
-        <ProductList
-          products={data?.pages.flat() ?? []}
-          fetchNextPage={fetchNextPage}
-        />
-      )}
-
-      {/* <Text>Hola {name}</Text> */}
-      {/*       <Button
-        accessoryLeft={<Icon name="log-out-outline" />}
-        onPress={logout}>
-        Logout
-      </Button> */}
-    </MainLayout>
+    <>
+      <MainLayout
+        title="Inventario App"
+        subTitle={`Hola ${user?.fullName}`}
+        rightAction={logout}
+        rightActionIcon="log-out-outline">
+        {isLoading ? (
+          <FullScreenLoader />
+        ) : (
+          <ProductList
+            products={data?.pages.flat() ?? []}
+            fetchNextPage={fetchNextPage}
+          />
+        )}
+      </MainLayout>
+      <FAB
+        iconName="plus-outline"
+        onPress={() => navigation.navigate('ProductScreen', { productId: 'new' })}
+        style={{
+          position: 'absolute',
+          bottom: 30,
+          right: 20,
+        }}
+      />
+    </>
   );
 };

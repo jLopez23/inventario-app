@@ -4,7 +4,6 @@ import {
   StackCardStyleInterpolator,
 } from '@react-navigation/stack';
 import {HomeScreen} from '../screens/home/HomeScreen';
-import {ProductsScreen} from '../screens/products/ProductsScreen';
 import {LoginScreen} from '../screens/auth/LoginScreen';
 import {RegisterScreen} from '../screens/auth/RegisterScreen';
 import {ProductScreen} from '../screens/products/ProductScreen';
@@ -14,7 +13,6 @@ export type RootStackParams = {
   RegisterScreen: undefined;
   HomeScreen: undefined;
   ProductScreen: {productId: string};
-  ProductsScreen: {productId: string};
 };
 
 const Stack = createStackNavigator<RootStackParams>();
@@ -50,7 +48,6 @@ export const StackNavigator = () => {
         component={HomeScreen}
       />
       <Stack.Screen name="ProductScreen" component={ProductScreen} />
-      <Stack.Screen name="ProductsScreen" component={ProductsScreen} />
     </Stack.Navigator>
   );
 };

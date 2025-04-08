@@ -22,7 +22,7 @@ import {Formik} from 'formik';
 import {ProductImages} from '../../components/products/ProductImages';
 import {sizes, genders} from '../../../config/constants/constants';
 import {Alert} from 'react-native';
-import {printAlert} from '../../../shared/helpers';
+import {printAlert} from '../../../helpers/app';
 import { CameraAdapter } from '../../../config/adapters/camera-adapter';
 
 interface Props extends StackScreenProps<RootStackParams, 'ProductScreen'> {

@@ -67,6 +67,7 @@ export const ProductScreen = ({route, navigation}: Props) => {
       console.log('Producto eliminado');
     },
     onError() {
+      queryClient.invalidateQueries({queryKey: ['products', 'infinite']});
       printAlert(
         'Error',
         'No se pudo eliminar el producto, actualice la lista de productos para validar si otro usuario lo eliminó.',

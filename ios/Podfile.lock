@@ -1242,6 +1242,27 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-image-picker (8.2.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-safe-area-context (5.2.0):
     - DoubleConversion
     - glog
@@ -1767,6 +1788,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -1878,6 +1900,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-image-picker:
+    :path: "../node_modules/react-native-image-picker"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   React-nativeconfig:
@@ -1983,6 +2007,7 @@ SPEC CHECKSUMS:
   React-logger: 7b5b458327a1ff0d7e5a349430d1ed133dcebaa3
   React-Mapbuffer: 0d88ad9afa9e195dd7634424bde1d38e4129e646
   React-microtasksnativemodule: 17234f35d37e6ed388e18a6314210b3b9e051219
+  react-native-image-picker: 732212151b686ff27ff57a7ea90f5d07d1a0c813
   react-native-safe-area-context: 5e53e2b0fc3a2994ad0c89a2486e545b6566d8c4
   React-nativeconfig: 93fe8c85a8c40820c57814e30f3e44b94c995a7b
   React-NativeModulesApple: a4457b73e63e983db66d66612160006bccb00ad5

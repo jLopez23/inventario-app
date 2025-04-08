@@ -19,11 +19,11 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {Product} from '../../../domain/entities/product';
 import {MyIcon} from '../../components/ui/MyIcon';
 import {Formik} from 'formik';
-import {useAuth} from '../../hooks/useAuth';
 import {ProductImages} from '../../components/products/ProductImages';
 import {sizes, genders} from '../../../config/constants/constants';
 import {Alert} from 'react-native';
 import {printAlert} from '../../../shared/helpers';
+import { CameraAdapter } from '../../../config/adapters/camera-adapter';
 
 interface Props extends StackScreenProps<RootStackParams, 'ProductScreen'> {
   productId: string;
@@ -33,7 +33,6 @@ export const ProductScreen = ({route, navigation}: Props) => {
   const productIdRef = useRef(route.params.productId);
   const theme = useTheme();
   const queryClient = useQueryClient();
-  const {logout} = useAuth();
 
   const {data: product} = useQuery({
     queryKey: ['product', productIdRef.current],
@@ -104,8 +103,11 @@ export const ProductScreen = ({route, navigation}: Props) => {
         <MainLayout
           title={values.title}
           subTitle={`Precio: ${values.price}`}
-          rightAction={logout}
-          rightActionIcon="log-out-outline">
+          rightAction={async () => {
+            const photos = await CameraAdapter.getPicturesFromLibrary();
+            setFieldValue('images', [...values.images, ...photos]);
+          }}
+          rightActionIcon="image-outline">
           <ScrollView style={{flex: 1}}>
             <Layout
               style={{

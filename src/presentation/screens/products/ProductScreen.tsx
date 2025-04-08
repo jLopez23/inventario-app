@@ -8,7 +8,11 @@ import {
 } from '@ui-kitten/components';
 import {MainLayout} from '../../layouts/MainLayout';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {getProductById, updateCreateProduct} from '../../../actions/products';
+import {
+  deleteProduct,
+  getProductById,
+  updateCreateProduct,
+} from '../../../actions/products';
 import {StackScreenProps} from '@react-navigation/stack';
 import {RootStackParams} from '../../routes/StackNavigator';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -18,12 +22,14 @@ import {Formik} from 'formik';
 import {useAuth} from '../../hooks/useAuth';
 import {ProductImages} from '../../components/products/ProductImages';
 import {sizes, genders} from '../../../config/constants/constants';
+import {Alert} from 'react-native';
+import {printAlert} from '../../../shared/helpers';
 
 interface Props extends StackScreenProps<RootStackParams, 'ProductScreen'> {
   productId: string;
 }
 
-export const ProductScreen = ({route}: Props) => {
+export const ProductScreen = ({route, navigation}: Props) => {
   const productIdRef = useRef(route.params.productId);
   const theme = useTheme();
   const queryClient = useQueryClient();
@@ -41,9 +47,44 @@ export const ProductScreen = ({route}: Props) => {
       productIdRef.current = data.id;
       queryClient.invalidateQueries({queryKey: ['products', 'infinite']});
       queryClient.invalidateQueries({queryKey: ['product', data.id]});
+      printAlert(
+        'Éxito',
+        `El producto fue ${
+          data.id === route.params.productId ? 'editado' : 'creado'
+        } exitosamente.`,
+      );
+      navigation.goBack();
       console.log('Success');
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteProduct(productIdRef.current),
+    onSuccess() {
+      queryClient.invalidateQueries({queryKey: ['products', 'infinite']});
+      printAlert('Éxito', `El producto fue eliminado exitosamente.`);
+      navigation.goBack();
+      console.log('Producto eliminado');
+    },
+  });
+
+  const handleDelete = () => {
+    Alert.alert(
+      'Eliminar producto',
+      '¿Estás seguro que deseas eliminar este producto?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Eliminar',
+          onPress: () => deleteMutation.mutate(),
+          style: 'destructive',
+        },
+      ],
+    );
+  };
 
   if (!product) {
     return <MainLayout title="Cargando..." />;
@@ -157,13 +198,26 @@ export const ProductScreen = ({route}: Props) => {
               ))}
             </ButtonGroup>
 
-            <Button
-              accessoryLeft={<MyIcon name="save-outline" white />}
-              onPress={() => handleSubmit()}
-              disabled={mutation.isPending}
-              style={{margin: 15}}>
-              Guardar
-            </Button>
+            <ButtonGroup
+              style={{margin: 2, marginTop: 20, marginHorizontal: 50}}
+              size="small">
+              <Button
+                accessoryLeft={<MyIcon name="save-outline" white />}
+                onPress={() => handleSubmit()}
+                disabled={mutation.isPending}
+                style={{margin: 15}}>
+                Guardar
+              </Button>
+              <Button
+                accessoryLeft={<MyIcon name="trash-2-outline" white />}
+                onPress={handleDelete}
+                disabled={deleteMutation.isPending || mutation.isPending}
+                status="danger"
+                style={{margin: 15, backgroundColor: 'red'}}>
+                Eliminar
+              </Button>
+            </ButtonGroup>
+
             <Layout style={{height: 200}} />
           </ScrollView>
         </MainLayout>

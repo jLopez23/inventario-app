@@ -27,6 +27,14 @@ export const HomeScreen = ({navigation}: Props) => {
     getNextPageParam: (lastPage, allPages) => allPages.length,
   });
 
+  const uniqueProducts =
+    data?.pages
+      .flat()
+      .filter(
+        (product, index, self) =>
+          self.findIndex(p => p.id === product.id) === index,
+      ) ?? [];
+
   return (
     <>
       <MainLayout
@@ -38,14 +46,14 @@ export const HomeScreen = ({navigation}: Props) => {
           <FullScreenLoader />
         ) : (
           <ProductList
-            products={data?.pages.flat() ?? []}
+            products={uniqueProducts}
             fetchNextPage={fetchNextPage}
           />
         )}
       </MainLayout>
       <FAB
         iconName="plus-outline"
-        onPress={() => navigation.navigate('ProductScreen', { productId: 'new' })}
+        onPress={() => navigation.navigate('ProductScreen', {productId: 'new'})}
         style={{
           position: 'absolute',
           bottom: 30,

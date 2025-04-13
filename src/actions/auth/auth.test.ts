@@ -1,12 +1,12 @@
+// auth.test.ts
 import {authLogin, authCheckStatus, authRegister} from './auth';
 import {tesloApi} from '../../config/api/tesloApi';
-import type {AuthResponse} from '../../infrastructure/interfaces/auth.responses';
 import {
-  expectedUserToken,
   mockAuthResponse,
-} from '../../../__tests__/mock-data';
+  expectedUserToken,
+} from '../../../__mocks__/mock-data';
 
-// Mockear el módulo tesloApi
+// Mock the tesloApi
 jest.mock('../../config/api/tesloApi', () => ({
   tesloApi: {
     post: jest.fn(),
@@ -14,128 +14,104 @@ jest.mock('../../config/api/tesloApi', () => ({
   },
 }));
 
-// Mockear la función console.log para evitar logs durante las pruebas
-jest.spyOn(console, 'log').mockImplementation(() => {});
+// Mock console.log to avoid polluting test output
+const originalConsoleLog = console.log;
+console.log = jest.fn();
 
-describe('Auth Actions', () => {
+describe('Authentication Functions', () => {
   beforeEach(() => {
-    // Limpiar todos los mocks antes de cada prueba
     jest.clearAllMocks();
   });
 
-  describe('authLogin', () => {
-    it('debería convertir el email a minúsculas y retornar usuario y token cuando la autenticación es exitosa', async () => {
-      // Arrange
-      const email = 'TEST@EXAMPLE.COM';
-      const password = 'password123';
-      const expectedEmailLowercase = 'test@example.com';
-      const expectedResult = expectedUserToken;
+  afterAll(() => {
+    console.log = originalConsoleLog;
+  });
 
-      const mockPost = tesloApi.post as jest.MockedFunction<
-        typeof tesloApi.post
-      >;
-      mockPost.mockResolvedValueOnce({data: mockAuthResponse});
+  describe('authLogin', () => {
+    it('debería iniciar sesión correctamente con credenciales válidas', async () => {
+      // Arrange
+      const email = 'USER@example.com';
+      const password = 'password123';
+      (tesloApi.post as jest.Mock).mockResolvedValueOnce({
+        data: mockAuthResponse,
+      });
 
       // Act
       const result = await authLogin(email, password);
 
       // Assert
-      expect(mockPost).toHaveBeenCalledWith('/auth/login', {
-        email: expectedEmailLowercase,
-        password: password,
+      expect(tesloApi.post).toHaveBeenCalledWith('/auth/login', {
+        email: 'user@example.com', // Should be lowercase
+        password: 'password123',
       });
-      expect(result).toEqual(expectedResult);
+      expect(result).toEqual(expectedUserToken);
     });
 
-    it('debería retornar null cuando ocurre un error en la API', async () => {
+    it('debe devolver null y registrar el error cuando falla la llamada a la API', async () => {
       // Arrange
-      const email = 'test@example.com';
-      const password = 'invalid-password';
-      const expectedResult = null;
-
-      const mockPost = tesloApi.post as jest.MockedFunction<
-        typeof tesloApi.post
-      >;
-      mockPost.mockRejectedValueOnce(new Error('Authentication failed'));
+      const email = 'user@example.com';
+      const password = 'password123';
+      const mockError = new Error('Network error');
+      (tesloApi.post as jest.Mock).mockRejectedValueOnce(mockError);
 
       // Act
       const result = await authLogin(email, password);
 
       // Assert
-      expect(result).toBe(expectedResult);
+      expect(result).toBeNull();
       expect(console.log).toHaveBeenCalled();
     });
   });
 
   describe('authCheckStatus', () => {
-    it('debería retornar usuario y token cuando la verificación de estado es exitosa', async () => {
+    it('debería verificar el estado de autenticación correctamente', async () => {
       // Arrange
-      const expectedResult = expectedUserToken;
-
-      const mockGet = tesloApi.get as jest.MockedFunction<typeof tesloApi.get>;
-      mockGet.mockResolvedValueOnce({data: mockAuthResponse});
+      (tesloApi.get as jest.Mock).mockResolvedValueOnce({
+        data: mockAuthResponse,
+      });
 
       // Act
       const result = await authCheckStatus();
 
       // Assert
-      expect(mockGet).toHaveBeenCalledWith('/auth/check-status');
-      expect(result).toEqual(expectedResult);
+      expect(tesloApi.get).toHaveBeenCalledWith('/auth/check-status');
+      expect(result).toEqual(expectedUserToken);
     });
 
-    it('debería retornar null cuando ocurre un error al verificar el estado', async () => {
+    it('debe devolver null y registrar el error cuando falla la llamada a la API', async () => {
       // Arrange
-      const expectedResult = null;
-
-      const mockGet = tesloApi.get as jest.MockedFunction<typeof tesloApi.get>;
-      mockGet.mockRejectedValueOnce(new Error('Token expired'));
+      const mockError = new Error('Network error');
+      (tesloApi.get as jest.Mock).mockRejectedValueOnce(mockError);
 
       // Act
       const result = await authCheckStatus();
 
       // Assert
-      expect(result).toBe(expectedResult);
+      expect(result).toBeNull();
       expect(console.log).toHaveBeenCalled();
     });
   });
 
   describe('authRegister', () => {
-    it('debería registrar un nuevo usuario y retornar usuario y token cuando el registro es exitoso', async () => {
+    it('debería registrar correctamente un nuevo usuario', async () => {
       // Arrange
-      const email = 'new@example.com';
+      const email = 'newuser@example.com';
       const password = 'newpassword123';
       const fullName = 'New User';
-
-      const mockRegisterResponse: AuthResponse = {
-        ...mockAuthResponse,
-        email: email,
-        fullName: fullName,
-      };
-
-      const expectedResult = {
-        user: {
-          ...expectedUserToken.user,
-          email: email,
-          fullName: fullName,
-        },
-        token: expectedUserToken.token,
-      };
-
-      const mockPost = tesloApi.post as jest.MockedFunction<
-        typeof tesloApi.post
-      >;
-      mockPost.mockResolvedValueOnce({data: mockRegisterResponse});
+      (tesloApi.post as jest.Mock).mockResolvedValueOnce({
+        data: mockAuthResponse,
+      });
 
       // Act
       const result = await authRegister(email, password, fullName);
 
       // Assert
-      expect(mockPost).toHaveBeenCalledWith('/auth/register', {
-        email: email,
-        password: password,
-        fullName: fullName,
+      expect(tesloApi.post).toHaveBeenCalledWith('/auth/register', {
+        email: 'newuser@example.com',
+        password: 'newpassword123',
+        fullName: 'New User',
       });
-      expect(result).toEqual(expectedResult);
+      expect(result).toEqual(expectedUserToken);
       expect(console.log).toHaveBeenCalledWith('Registering user...', {
         email,
         password,
@@ -143,23 +119,19 @@ describe('Auth Actions', () => {
       });
     });
 
-    it('debería retornar null cuando ocurre un error en el registro', async () => {
+    it('debe devolver null y registrar el error cuando falla la llamada a la API', async () => {
       // Arrange
-      const email = 'existing@example.com';
-      const password = 'existingpassword';
-      const fullName = 'Existing User';
-      const expectedResult = null;
-
-      const mockPost = tesloApi.post as jest.MockedFunction<
-        typeof tesloApi.post
-      >;
-      mockPost.mockRejectedValueOnce(new Error('User already exists'));
+      const email = 'newuser@example.com';
+      const password = 'newpassword123';
+      const fullName = 'New User';
+      const mockError = new Error('Registration failed');
+      (tesloApi.post as jest.Mock).mockRejectedValueOnce(mockError);
 
       // Act
       const result = await authRegister(email, password, fullName);
 
       // Assert
-      expect(result).toBe(expectedResult);
+      expect(result).toBeNull();
       expect(console.log).toHaveBeenCalled();
     });
   });

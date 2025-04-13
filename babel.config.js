@@ -8,5 +8,6 @@ module.exports = {
         path: '.env',
       },
     ],
-  ]
+    'react-native-reanimated/plugin', // Este plugin debe estar al final
+  ],
 };

@@ -23,7 +23,7 @@ import {ProductImages} from '../../components/products/ProductImages';
 import {sizes, genders} from '../../../config/constants/constants';
 import {Alert} from 'react-native';
 import {printAlert} from '../../../helpers/app';
-import { CameraAdapter } from '../../../config/adapters/camera-adapter';
+import {CameraAdapter} from '../../../config/adapters/camera-adapter';
 
 interface Props extends StackScreenProps<RootStackParams, 'ProductScreen'> {
   productId: string;
@@ -207,10 +207,27 @@ export const ProductScreen = ({route, navigation}: Props) => {
                 </Button>
               ))}
             </ButtonGroup>
-
-            <ButtonGroup
-              style={{margin: 2, marginTop: 20, marginHorizontal: 50}}
-              size="small">
+            {values.id ? (
+              <ButtonGroup
+                style={{margin: 2, marginTop: 20, marginHorizontal: 50}}
+                size="small">
+                <Button
+                  accessoryLeft={<MyIcon name="save-outline" white />}
+                  onPress={() => handleSubmit()}
+                  disabled={mutation.isPending}
+                  style={{margin: 15}}>
+                  Guardar
+                </Button>
+                <Button
+                  accessoryLeft={<MyIcon name="trash-2-outline" white />}
+                  onPress={handleDelete}
+                  disabled={deleteMutation.isPending || mutation.isPending}
+                  status="danger"
+                  style={{margin: 15, backgroundColor: 'red'}}>
+                  Eliminar
+                </Button>
+              </ButtonGroup>
+            ) : (
               <Button
                 accessoryLeft={<MyIcon name="save-outline" white />}
                 onPress={() => handleSubmit()}
@@ -218,16 +235,7 @@ export const ProductScreen = ({route, navigation}: Props) => {
                 style={{margin: 15}}>
                 Guardar
               </Button>
-              <Button
-                accessoryLeft={<MyIcon name="trash-2-outline" white />}
-                onPress={handleDelete}
-                disabled={deleteMutation.isPending || mutation.isPending}
-                status="danger"
-                style={{margin: 15, backgroundColor: 'red'}}>
-                Eliminar
-              </Button>
-            </ButtonGroup>
-
+            )}
             <Layout style={{height: 200}} />
           </ScrollView>
         </MainLayout>

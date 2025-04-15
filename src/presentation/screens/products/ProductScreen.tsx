@@ -55,6 +55,11 @@ export const ProductScreen = ({route, navigation}: Props) => {
       navigation.goBack();
       console.log('Success');
     },
+    onError() {
+      queryClient.invalidateQueries({queryKey: ['products', 'infinite']});
+      printAlert('Error', 'No se pudo crear-editar el producto.');
+      console.log('Error al crear o editar el producto');
+    },
   });
 
   const deleteMutation = useMutation({

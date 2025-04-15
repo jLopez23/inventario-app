@@ -1,5 +1,41 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ProductImages debería coincidir con el snapshot cuando no hay imágenes 1`] = `
+<Image
+  source="test-file-stub"
+  style={
+    {
+      "height": 300,
+      "width": 300,
+    }
+  }
+/>
+`;
+
+exports[`ProductImages debería coincidir con el snapshot para ninguna imagen 1`] = `
+<Image
+  source="mock-no-product-image"
+  style={
+    {
+      "height": 300,
+      "width": 300,
+    }
+  }
+/>
+`;
+
+exports[`ProductImages debería mostrar la imagen de respaldo correctamente cuando no hay imágenes 1`] = `
+<Image
+  source="test-file-stub"
+  style={
+    {
+      "height": 300,
+      "width": 300,
+    }
+  }
+/>
+`;
+
 exports[`ProductImages should match snapshot for no images 1`] = `
 <Image
   source="mock-no-product-image"

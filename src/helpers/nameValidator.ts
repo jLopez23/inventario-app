@@ -1,4 +1,5 @@
 export const nameValidator = (name: string) => {
-  if (!name) return 'El nombre no puede estar vacío.';
+  // Verifica si el nombre está vacío o solo contiene espacios
+  if (!name || name.trim() === '') return 'El nombre no puede estar vacío.';
   return '';
 };

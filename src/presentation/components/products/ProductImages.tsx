@@ -16,6 +16,7 @@ export const ProductImages = ({images}: Props) => {
         />
       ) : (
         <FlatList
+          testID="product-image-list" // Mantenemos este testID
           data={images}
           keyExtractor={item => item}
           horizontal

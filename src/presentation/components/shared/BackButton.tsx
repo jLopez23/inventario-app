@@ -4,11 +4,12 @@ import {getStatusBarHeight} from 'react-native-status-bar-height';
 
 interface BackButtonProps {
   goBack: () => void;
+  testID?: string;
 }
 
-const BackButton: React.FC<BackButtonProps> = ({goBack}) => {
+const BackButton: React.FC<BackButtonProps> = ({goBack, testID}) => {
   return (
-    <TouchableOpacity onPress={goBack} style={styles.container}>
+    <TouchableOpacity onPress={goBack} style={styles.container} testID={testID}>
       <Image
         style={styles.image}
         source={require('../../../assets/arrow_back.png')}

@@ -2,9 +2,10 @@ import React from 'react';
 import {ImageBackground, StyleSheet, KeyboardAvoidingView} from 'react-native';
 import {theme} from '../../theme/theme';
 
-const Background = ({children}) => {
+const Background = ({children, testID}) => {
   return (
     <ImageBackground
+      testID={testID}
       source={require('../../../assets/background_dot.png')}
       resizeMode="repeat"
       style={styles.background}>

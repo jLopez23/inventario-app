@@ -5,7 +5,6 @@ import {useAuth} from '../hooks/useAuth';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import {AuthStatus} from '../../infrastructure/interfaces/auth.status';
-import {Provider} from 'react-redux';
 
 // Mocks
 jest.mock('../hooks/useAuth', () => ({
@@ -32,6 +31,9 @@ describe('AuthProvider Component', () => {
   // Mock para useNavigation
   const mockReset = jest.fn();
 
+  // Capturar la función selector utilizada en useSelector
+  let capturedSelectorFn;
+
   // Contenido de prueba
   const testChildContent = 'Contenido de prueba';
 
@@ -43,8 +45,11 @@ describe('AuthProvider Component', () => {
       checkStatus: mockCheckStatus,
     });
 
-    // Configurar mock para useSelector
-    (useSelector as jest.Mock).mockImplementation(() => mockSelector());
+    // Configurar mock para useSelector para capturar la función de selector
+    (useSelector as jest.Mock).mockImplementation(selectorFn => {
+      capturedSelectorFn = selectorFn;
+      return mockSelector();
+    });
 
     // Configurar mock para useNavigation
     (useNavigation as jest.Mock).mockReturnValue({
@@ -196,5 +201,27 @@ describe('AuthProvider Component', () => {
 
     // Assert
     expect(mockReset).not.toHaveBeenCalled();
+  });
+
+  it('debería extraer correctamente el estado de autenticación del store', () => {
+    // Arrange
+    const mockAuthState = {
+      status: 'authenticated',
+      user: {id: '123', fullName: 'Test User'},
+    };
+    const mockRootState = {authUser: mockAuthState};
+
+    // Act
+    render(
+      <AuthProvider>
+        <mock-text testID="child-content">{testChildContent}</mock-text>
+      </AuthProvider>,
+    );
+
+    // Ejecutar la función del selector capturada con un estado mock
+    const result = capturedSelectorFn(mockRootState);
+
+    // Assert
+    expect(result).toEqual(mockAuthState);
   });
 });

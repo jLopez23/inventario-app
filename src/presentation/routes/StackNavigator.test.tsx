@@ -3,6 +3,9 @@ import {render} from '@testing-library/react-native';
 import {StackNavigator} from './StackNavigator';
 import {NavigationContainer} from '@react-navigation/native';
 
+// Captura la implementación de fadeAnimation para probarla directamente
+let capturedFadeAnimation;
+
 // Mocks para las dependencias
 jest.mock('@react-navigation/stack', () => {
   return {
@@ -15,14 +18,20 @@ jest.mock('@react-navigation/stack', () => {
           {children}
         </mock-navigator>
       )),
-      Screen: jest.fn(({name, component, options}) => (
-        <mock-screen
-          testID={`screen-${name}`}
-          name={name}
-          component={component}
-          animation={options?.cardStyleInterpolator ? true : false}
-        />
-      )),
+      Screen: jest.fn(({name, component, options}) => {
+        // Capturar la función fadeAnimation cuando se usa en las opciones
+        if (options?.cardStyleInterpolator) {
+          capturedFadeAnimation = options.cardStyleInterpolator;
+        }
+        return (
+          <mock-screen
+            testID={`screen-${name}`}
+            name={name}
+            component={component}
+            animation={options?.cardStyleInterpolator ? true : false}
+          />
+        );
+      }),
     })),
     StackCardStyleInterpolator: {
       forFadeFromBottomAndroid: 'forFadeFromBottomAndroid-mock',
@@ -178,5 +187,41 @@ describe('StackNavigator', () => {
     expect(loginScreen.props.animation).toBe(true);
     expect(registerScreen.props.animation).toBe(true);
     expect(homeScreen.props.animation).toBe(true);
+  });
+
+  it('debería implementar correctamente la función fadeAnimation', () => {
+    // Arrange
+    // Renderizar el componente para asegurarnos de que capturedFadeAnimation se llene
+    render(<StackNavigator />, {
+      wrapper: NavigationWrapper,
+    });
+
+    // Simular el objeto current que se pasa a la función fadeAnimation
+    const mockCurrent = {
+      progress: 0.5, // Un valor de progreso de ejemplo
+    };
+
+    // Act
+    // Ejecutar la función fadeAnimation con el mock de current
+    const result = capturedFadeAnimation({current: mockCurrent});
+
+    // Assert
+    // Verificar que la función retorna el objeto esperado
+    expect(result).toEqual({
+      cardStyle: {
+        opacity: mockCurrent.progress,
+      },
+    });
+
+    // También probamos con otro valor para asegurar la correcta implementación
+    const mockCurrent2 = {
+      progress: 0.8,
+    };
+    const result2 = capturedFadeAnimation({current: mockCurrent2});
+    expect(result2).toEqual({
+      cardStyle: {
+        opacity: mockCurrent2.progress,
+      },
+    });
   });
 });

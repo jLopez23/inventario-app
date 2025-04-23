@@ -1,13 +1,13 @@
 // tesloApi.test.ts
-import { AxiosRequestConfig } from 'axios';
-import { getApiUrl } from './tesloApiHelper';
-import { StorageAdapter } from '../adapters/storage-adapter';
+import {AxiosRequestConfig} from 'axios';
+import {getApiUrl} from './tesloApiHelper';
+import {StorageAdapter} from '../adapters/storage-adapter';
 
 // Mock para StorageAdapter
 jest.mock('../adapters/storage-adapter', () => ({
   StorageAdapter: {
-    getItem: jest.fn()
-  }
+    getItem: jest.fn(),
+  },
 }));
 
 describe('tesloApi', () => {
@@ -23,19 +23,37 @@ describe('tesloApi', () => {
 
     // Test para cuando STAGE es 'prod'
     it('debe usar PROD_URL cuando STAGE es prod', () => {
-      const result = getApiUrl('prod', 'cualquiera', PROD_URL, API_URL_IOS, API_URL_ANDROID);
+      const result = getApiUrl(
+        'prod',
+        'cualquiera',
+        PROD_URL,
+        API_URL_IOS,
+        API_URL_ANDROID,
+      );
       expect(result).toBe(PROD_URL);
     });
 
     // Test para cuando STAGE no es 'prod' y Platform.OS es 'ios'
     it('debe usar API_URL_IOS cuando STAGE no es prod y Platform.OS es ios', () => {
-      const result = getApiUrl('dev', 'ios', PROD_URL, API_URL_IOS, API_URL_ANDROID);
+      const result = getApiUrl(
+        'dev',
+        'ios',
+        PROD_URL,
+        API_URL_IOS,
+        API_URL_ANDROID,
+      );
       expect(result).toBe(API_URL_IOS);
     });
 
     // Test para cuando STAGE no es 'prod' y Platform.OS no es 'ios'
     it('debe usar API_URL_ANDROID cuando STAGE no es prod y Platform.OS no es ios', () => {
-      const result = getApiUrl('dev', 'android', PROD_URL, API_URL_IOS, API_URL_ANDROID);
+      const result = getApiUrl(
+        'dev',
+        'android',
+        PROD_URL,
+        API_URL_IOS,
+        API_URL_ANDROID,
+      );
       expect(result).toBe(API_URL_ANDROID);
     });
   });
@@ -59,12 +77,15 @@ describe('tesloApi', () => {
       };
 
       // Probar el interceptor con una configuración de prueba
-      const mockConfig: AxiosRequestConfig = { headers: {} };
+      const mockConfig: AxiosRequestConfig = {headers: {}};
       const result = await interceptor(mockConfig);
 
       // Verificar que el token se añadió correctamente
       expect(StorageAdapter.getItem).toHaveBeenCalledWith('token');
-      expect(result.headers).toHaveProperty('Authorization', `Bearer ${mockToken}`);
+      expect(result.headers).toHaveProperty(
+        'Authorization',
+        `Bearer ${mockToken}`,
+      );
     });
 
     // Test para simular el interceptor cuando no hay token
@@ -83,7 +104,7 @@ describe('tesloApi', () => {
       };
 
       // Probar el interceptor con una configuración de prueba
-      const mockConfig: AxiosRequestConfig = { headers: {} };
+      const mockConfig: AxiosRequestConfig = {headers: {}};
       const result = await interceptor(mockConfig);
 
       // Verificar que no se añadió el token

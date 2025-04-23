@@ -1,6 +1,7 @@
 // tesloApi.test.ts
 import { AxiosRequestConfig } from 'axios';
 import { getApiUrl } from './tesloApiHelper';
+import { StorageAdapter } from '../adapters/storage-adapter';
 
 // Mock para StorageAdapter
 jest.mock('../adapters/storage-adapter', () => ({
@@ -44,9 +45,8 @@ describe('tesloApi', () => {
     // Test para simular el interceptor cuando hay token
     it('debe añadir token al header cuando existe', async () => {
       // Simular el comportamiento del interceptor directamente
-      const { StorageAdapter } = require('../adapters/storage-adapter');
       const mockToken = 'mock-token';
-      StorageAdapter.getItem.mockResolvedValue(mockToken);
+      (StorageAdapter.getItem as jest.Mock).mockResolvedValue(mockToken);
 
       // Crear una función de interceptor como la que existe en tesloApi.ts
       const interceptor = async (config: AxiosRequestConfig) => {
@@ -70,8 +70,7 @@ describe('tesloApi', () => {
     // Test para simular el interceptor cuando no hay token
     it('no debe añadir token al header cuando no existe', async () => {
       // Simular el comportamiento del interceptor directamente
-      const { StorageAdapter } = require('../adapters/storage-adapter');
-      StorageAdapter.getItem.mockResolvedValue(null);
+      (StorageAdapter.getItem as jest.Mock).mockResolvedValue(null);
 
       // Crear una función de interceptor como la que existe en tesloApi.ts
       const interceptor = async (config: AxiosRequestConfig) => {

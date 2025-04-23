@@ -540,14 +540,16 @@ describe('updateCreateProduct', () => {
         if (url === '/files/product') {
           // Cada llamada a post con /files/product retorna un nombre diferente
           const formData = (tesloApi.post as jest.Mock).mock.calls.filter(
-            call => call[0] === '/files/product'
+            call => call[0] === '/files/product',
           ).length;
-          
+
           return Promise.resolve({
-            data: { image: `https://cdn.example.com/uploaded-image-${formData}.jpg` }
+            data: {
+              image: `https://cdn.example.com/uploaded-image-${formData}.jpg`,
+            },
           });
         }
-        return Promise.resolve({ data: {} });
+        return Promise.resolve({data: {}});
       });
 
       // Mock para patch con la respuesta esperada después de procesar todas las imágenes
@@ -573,7 +575,7 @@ describe('updateCreateProduct', () => {
       // Assert
       // Verificar que se subieron exactamente 2 imágenes locales
       expect(tesloApi.post).toHaveBeenCalledTimes(2);
-      
+
       // Verificar que se procesaron correctamente todas las imágenes
       expect(tesloApi.patch).toHaveBeenCalled();
       expect(result.images).toHaveLength(5);
@@ -606,19 +608,19 @@ describe('updateCreateProduct', () => {
 
       // Mock isAxiosError para este caso específico
       (isAxiosError as unknown as jest.Mock).mockReturnValue(true);
-      
+
       // Mock del reject con error de Axios
       (tesloApi.post as jest.Mock).mockRejectedValue(axiosError);
 
       // Act y Assert
       await expect(updateCreateProduct(newProductWithError)).rejects.toThrow(
-        'Error al crear el producto'
+        'Error al crear el producto',
       );
 
       // Verificar que se registró el error específicamente como un error de Axios
       expect(console.log).toHaveBeenCalledWith(
         'Error Axios createProduct:',
-        expect.any(String)
+        expect.any(String),
       );
     });
 
@@ -645,19 +647,19 @@ describe('updateCreateProduct', () => {
 
       // Mock isAxiosError para este caso específico
       (isAxiosError as unknown as jest.Mock).mockReturnValue(true);
-      
+
       // Mock del reject con error de Axios
       (tesloApi.patch as jest.Mock).mockRejectedValue(axiosError);
 
       // Act y Assert
-      await expect(updateCreateProduct(existingProductWithError)).rejects.toThrow(
-        'Error updating product'
-      );
+      await expect(
+        updateCreateProduct(existingProductWithError),
+      ).rejects.toThrow('Error updating product');
 
       // Verificar que se registró el error específicamente como un error de Axios
       expect(console.log).toHaveBeenCalledWith(
         'Error Axios updateProduct:',
-        expect.any(String)
+        expect.any(String),
       );
     });
   });
@@ -682,13 +684,13 @@ describe('updateCreateProduct', () => {
       (tesloApi.post as jest.Mock).mockImplementation((url: string) => {
         if (url === '/files/product') {
           const callCount = (tesloApi.post as jest.Mock).mock.calls.filter(
-            (call) => call[0] === '/files/product'
+            call => call[0] === '/files/product',
           ).length;
           return Promise.resolve({
-            data: { image: `https://cdn.example.com/uploaded-${callCount}.jpg` }
+            data: {image: `https://cdn.example.com/uploaded-${callCount}.jpg`},
           });
         }
-        return Promise.resolve({ data: {} });
+        return Promise.resolve({data: {}});
       });
 
       // Mock para patch con la respuesta esperada después de procesar todas las imágenes
@@ -698,11 +700,7 @@ describe('updateCreateProduct', () => {
           title: 'Producto Solo Con Imágenes Locales',
           price: 75,
           stock: 22,
-          images: [
-            'uploaded-1.jpg',
-            'uploaded-2.jpg',
-            'uploaded-3.jpg',
-          ],
+          images: ['uploaded-1.jpg', 'uploaded-2.jpg', 'uploaded-3.jpg'],
         },
       });
 
@@ -721,7 +719,7 @@ describe('updateCreateProduct', () => {
     it('debería manejar el caso donde hay mezcla de imágenes con casos extremos', async () => {
       // Este test incluye casos con formatos variados, nombres de archivos extraños
       // y asegura que todos los caminos del código se cubran
-      
+
       const productWithComplexImages: Partial<Product> = {
         id: 'product-complex-images',
         title: 'Producto Con Casos Complejos',
@@ -730,13 +728,13 @@ describe('updateCreateProduct', () => {
         images: [
           // Imagen remota sin extensión visible
           'https://example.com/images/product',
-          
+
           // Imagen local con caracteres especiales en el nombre
           'file:///local/path/to/special@character#image.jpg',
-          
+
           // Imagen con formato peculiar y sin extensión clara
           'https://weird-domain.com/get.php?id=123',
-          
+
           // Imagen local con ruta compleja
           'file:///Users/user/path with spaces/deep/folder/structure/image with spaces.jpeg',
         ],
@@ -746,10 +744,10 @@ describe('updateCreateProduct', () => {
       (tesloApi.post as jest.Mock).mockImplementation((url: string) => {
         if (url === '/files/product') {
           return Promise.resolve({
-            data: { image: 'https://cdn.example.com/processed-image.jpg' }
+            data: {image: 'https://cdn.example.com/processed-image.jpg'},
           });
         }
-        return Promise.resolve({ data: {} });
+        return Promise.resolve({data: {}});
       });
 
       // Mock para patch con respuesta procesada
@@ -774,7 +772,7 @@ describe('updateCreateProduct', () => {
       // Assert
       // Verificar que se subieron 2 imágenes locales
       expect(tesloApi.post).toHaveBeenCalledTimes(2);
-      
+
       // Verificar que se procesaron correctamente
       expect(tesloApi.patch).toHaveBeenCalled();
       expect(result.images).toHaveLength(4);
@@ -798,35 +796,34 @@ describe('updateCreateProduct', () => {
       (tesloApi.post as jest.Mock).mockRejectedValue(uploadError);
 
       // Act & Assert
-      await expect(updateCreateProduct(productWithFailingImages)).rejects.toThrow();
-      
+      await expect(
+        updateCreateProduct(productWithFailingImages),
+      ).rejects.toThrow();
+
       // Verificar que se intentó cargar imágenes
       expect(tesloApi.post).toHaveBeenCalledWith(
         '/files/product',
         expect.any(FormData),
-        expect.anything()
+        expect.anything(),
       );
     });
-    
+
     it('debería manejar imágenes con rutas extremadamente largas', async () => {
       // Arrange
       // Creamos una ruta de archivo extremadamente larga
       const longPath = 'file:///' + 'a'.repeat(200) + '/image.jpg';
-      
+
       const productWithLongPath: Partial<Product> = {
         id: 'product-long-path',
         title: 'Producto Con Ruta Larga',
         price: 99.99,
         stock: 15,
-        images: [
-          longPath,
-          'https://example.com/regular-image.jpg',
-        ],
+        images: [longPath, 'https://example.com/regular-image.jpg'],
       };
 
       // Simular la subida de la imagen
       (tesloApi.post as jest.Mock).mockResolvedValue({
-        data: { image: 'https://cdn.example.com/uploaded-long-path.jpg' }
+        data: {image: 'https://cdn.example.com/uploaded-long-path.jpg'},
       });
 
       // Mock para patch
@@ -836,10 +833,7 @@ describe('updateCreateProduct', () => {
           title: 'Producto Con Ruta Larga',
           price: 99.99,
           stock: 15,
-          images: [
-            'uploaded-long-path.jpg',
-            'regular-image.jpg',
-          ],
+          images: ['uploaded-long-path.jpg', 'regular-image.jpg'],
         },
       });
 
@@ -860,17 +854,16 @@ describe('updateCreateProduct', () => {
         title: 'Producto Con Respuesta Extraña',
         price: 45,
         stock: 7,
-        images: [
-          'file:///local/path/to/image.jpg',
-        ],
+        images: ['file:///local/path/to/image.jpg'],
       };
 
       // Simular una respuesta con un formato de imagen inusual
       (tesloApi.post as jest.Mock).mockResolvedValue({
-        data: { 
+        data: {
           // Respuesta con una URL absolutamente completa y parámetros
-          image: 'https://cdn.example.com/images/products/full-path/with/params.jpg?token=123&source=upload'
-        }
+          image:
+            'https://cdn.example.com/images/products/full-path/with/params.jpg?token=123&source=upload',
+        },
       });
 
       // Mock para patch
@@ -881,7 +874,7 @@ describe('updateCreateProduct', () => {
           price: 45,
           stock: 7,
           images: [
-            'params.jpg',  // Debería extraer solo el nombre del archivo
+            'params.jpg', // Debería extraer solo el nombre del archivo
           ],
         },
       });
@@ -910,29 +903,33 @@ describe('updateCreateProduct', () => {
       };
 
       // Simular éxito en la subida de imagen
-      (tesloApi.post as jest.Mock).mockImplementation((url: string, data: any) => {
-        if (url === '/files/product') {
-          return Promise.resolve({
-            data: { image: 'https://cdn.example.com/uploaded-image.jpg' }
-          });
-        }
-        
-        if (url === '/products/') {
-          // Simular rechazo en la creación del producto
-          return Promise.reject(new Error('Error al crear el producto'));
-        }
-        
-        return Promise.resolve({ data: {} });
-      });
+      (tesloApi.post as jest.Mock).mockImplementation(
+        (url: string, data: any) => {
+          if (url === '/files/product') {
+            return Promise.resolve({
+              data: {image: 'https://cdn.example.com/uploaded-image.jpg'},
+            });
+          }
+
+          if (url === '/products/') {
+            // Simular rechazo en la creación del producto
+            return Promise.reject(new Error('Error al crear el producto'));
+          }
+
+          return Promise.resolve({data: {}});
+        },
+      );
 
       // Act & Assert
-      await expect(updateCreateProduct(newProductWithRejection)).rejects.toThrow();
-      
+      await expect(
+        updateCreateProduct(newProductWithRejection),
+      ).rejects.toThrow();
+
       // Verificar que primero se subió la imagen y luego falló la creación
       expect(tesloApi.post).toHaveBeenCalledWith(
         '/files/product',
         expect.any(FormData),
-        expect.anything()
+        expect.anything(),
       );
       expect(tesloApi.post).toHaveBeenCalledWith(
         '/products/',
@@ -940,7 +937,7 @@ describe('updateCreateProduct', () => {
           title: 'Producto Nuevo Con Rechazo',
           price: 199.99,
           stock: 30,
-        })
+        }),
       );
     });
   });
@@ -958,30 +955,32 @@ describe('updateCreateProduct', () => {
 
       // Simulamos que el error es de tipo Axios
       (isAxiosError as jest.Mock).mockReturnValue(true);
-      
+
       // Creamos un error específico de Axios (simulado)
       const axiosError = new Error('Error de Axios específico');
       Object.assign(axiosError, {
         isAxiosError: true,
         response: {
           status: 500,
-          data: { message: 'Error interno del servidor' }
-        }
+          data: {message: 'Error interno del servidor'},
+        },
       });
 
       // Hacemos que la llamada a patch arroje este error
       (tesloApi.patch as jest.Mock).mockRejectedValue(axiosError);
 
       // Act & Assert
-      await expect(updateCreateProduct(product)).rejects.toThrow('Error updating product');
-      
+      await expect(updateCreateProduct(product)).rejects.toThrow(
+        'Error updating product',
+      );
+
       // Verificamos que se llamó a isAxiosError
       expect(isAxiosError).toHaveBeenCalledWith(axiosError);
-      
+
       // Verificamos que se llamó a console.log con el error
       expect(console.log).toHaveBeenCalledWith(
         'Error Axios updateProduct:',
-        expect.any(String)
+        expect.any(String),
       );
     });
 
@@ -996,7 +995,7 @@ describe('updateCreateProduct', () => {
 
       // Simulamos que el error NO es de tipo Axios
       (isAxiosError as jest.Mock).mockReturnValue(false);
-      
+
       // Creamos un error genérico (no Axios)
       const genericError = new Error('Error genérico no relacionado con Axios');
 
@@ -1004,15 +1003,17 @@ describe('updateCreateProduct', () => {
       (tesloApi.patch as jest.Mock).mockRejectedValue(genericError);
 
       // Act & Assert
-      await expect(updateCreateProduct(product)).rejects.toThrow('Error updating product');
-      
+      await expect(updateCreateProduct(product)).rejects.toThrow(
+        'Error updating product',
+      );
+
       // Verificamos que se llamó a isAxiosError
       expect(isAxiosError).toHaveBeenCalledWith(genericError);
-      
+
       // Verificamos que NO se llamó a console.log con el mensaje específico de error Axios
       expect(console.log).not.toHaveBeenCalledWith(
         'Error Axios updateProduct:',
-        expect.any(String)
+        expect.any(String),
       );
     });
   });
@@ -1030,30 +1031,32 @@ describe('updateCreateProduct', () => {
 
       // Simulamos que el error es de tipo Axios
       (isAxiosError as jest.Mock).mockReturnValue(true);
-      
+
       // Creamos un error específico de Axios (simulado)
       const axiosError = new Error('Error de Axios específico');
       Object.assign(axiosError, {
         isAxiosError: true,
         response: {
           status: 400,
-          data: { message: 'Datos inválidos' }
-        }
+          data: {message: 'Datos inválidos'},
+        },
       });
 
       // Hacemos que la llamada a post arroje este error
       (tesloApi.post as jest.Mock).mockRejectedValue(axiosError);
 
       // Act & Assert
-      await expect(updateCreateProduct(product)).rejects.toThrow('Error al crear el producto');
-      
+      await expect(updateCreateProduct(product)).rejects.toThrow(
+        'Error al crear el producto',
+      );
+
       // Verificamos que se llamó a isAxiosError
       expect(isAxiosError).toHaveBeenCalledWith(axiosError);
-      
+
       // Verificamos que se llamó a console.log con el error
       expect(console.log).toHaveBeenCalledWith(
         'Error Axios createProduct:',
-        expect.any(String)
+        expect.any(String),
       );
     });
 
@@ -1068,7 +1071,7 @@ describe('updateCreateProduct', () => {
 
       // Simulamos que el error NO es de tipo Axios
       (isAxiosError as jest.Mock).mockReturnValue(false);
-      
+
       // Creamos un error genérico (no Axios)
       const genericError = new Error('Error genérico no relacionado con Axios');
 
@@ -1076,15 +1079,17 @@ describe('updateCreateProduct', () => {
       (tesloApi.post as jest.Mock).mockRejectedValue(genericError);
 
       // Act & Assert
-      await expect(updateCreateProduct(product)).rejects.toThrow('Error al crear el producto');
-      
+      await expect(updateCreateProduct(product)).rejects.toThrow(
+        'Error al crear el producto',
+      );
+
       // Verificamos que se llamó a isAxiosError
       expect(isAxiosError).toHaveBeenCalledWith(genericError);
-      
+
       // Verificamos que NO se llamó a console.log con el mensaje específico de error Axios
       expect(console.log).not.toHaveBeenCalledWith(
         'Error Axios createProduct:',
-        expect.any(String)
+        expect.any(String),
       );
     });
   });
